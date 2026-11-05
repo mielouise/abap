@@ -1,0 +1,4 @@
+@EndUserText.label: 'Stock UI Service'
+define service ZUI_SPACC110_STOCK_O4 {
+  expose ZC_SPACC110_STOCK as Stock;
+}
