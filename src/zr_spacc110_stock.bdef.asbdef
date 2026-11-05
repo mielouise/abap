@@ -1,0 +1,21 @@
+managed implementation in class zbp_r_spacc110_stock unique;
+strict ( 2 );
+
+define behavior for ZR_SPACC110_STOCK alias Stock
+persistent table zspacc110_stock
+lock master
+authorization master ( none )
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly : update ) warehouse_id, product_id;
+
+  mapping for zspacc110_stock
+  {
+    warehouse_id = warehouse_id;
+    product_id   = product_id;
+    amount       = amount;
+  }
+}
