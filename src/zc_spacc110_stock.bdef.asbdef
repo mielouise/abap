@@ -1,0 +1,9 @@
+projection;
+strict ( 2 );
+
+define behavior for ZC_SPACC110_STOCK alias Stock
+{
+  use create;
+  use update;
+  use delete;
+}
