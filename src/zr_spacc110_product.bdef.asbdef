@@ -9,24 +9,22 @@ lock master
 total etag LastChangedAt
 authorization master ( none )
 etag master LocalLastChangedAt
+early numbering
 {
   create;
   update;
   delete;
 
-  field ( mandatory : create )
-    ProductId,
-    ProductName;
-
-  field ( readonly : update )
-    ProductId;
-
   field ( readonly )
+    ProductId,
     LocalCreatedBy,
     LocalCreatedAt,
     LocalLastChangedBy,
     LocalLastChangedAt,
     LastChangedAt;
+
+  field ( mandatory : create )
+    ProductName;
 
   draft action Edit;
   draft action Activate optimized;
