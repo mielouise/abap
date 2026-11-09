@@ -26,18 +26,22 @@ define root view entity ZC_SPACC110_PRODUCT
     }
   ]
 
+  @EndUserText.label: 'Product ID'
   @UI.lineItem: [{ position: 10 }]
   @UI.identification: [{ position: 10 }]
   key ProductId,
 
+  @EndUserText.label: 'Product Name'
   @UI.lineItem: [{ position: 20 }]
   @UI.identification: [{ position: 20 }]
   ProductName,
 
+  @EndUserText.label: 'Description'
   @UI.lineItem: [{ position: 30 }]
   @UI.identification: [{ position: 30 }]
   ProductDescription,
 
+  @EndUserText.label: 'Category'
   @UI.lineItem: [{ position: 40 }]
   @UI.identification: [{ position: 40 }]
   Category,
