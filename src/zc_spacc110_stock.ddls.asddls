@@ -3,18 +3,45 @@
 @EndUserText.label: 'Stock Projection View'
 @Metadata.ignorePropagatedAnnotations: true
 
+@UI.headerInfo: {
+  typeName: 'Stock',
+  typeNamePlural: 'Stock Overview',
+  title: {
+    type: #STANDARD,
+    value: 'ProductName'
+  },
+  description: {
+    value: 'WarehouseName'
+  }
+}
+
 define root view entity ZC_SPACC110_STOCK
   provider contract transactional_query
   as projection on ZR_SPACC110_STOCK
 {
+  @UI.facet: [
+    {
+      id: 'StockDetails',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Stock Details',
+      position: 10
+    }
+  ]
+
+  @EndUserText.label: 'Warehouse ID'
   @UI.lineItem: [{ position: 10 }]
+  @UI.identification: [{ position: 10 }]
   key warehouse_id,
 
+  @EndUserText.label: 'Product ID'
   @UI.lineItem: [{ position: 20 }]
+  @UI.identification: [{ position: 20 }]
   key product_id,
 
   @EndUserText.label: 'Product Name'
   @UI.lineItem: [{ position: 30 }]
+  @UI.identification: [{ position: 30 }]
   _Product.product_name as ProductName,
 
   @EndUserText.label: 'Description'
@@ -27,10 +54,12 @@ define root view entity ZC_SPACC110_STOCK
 
   @EndUserText.label: 'Warehouse'
   @UI.lineItem: [{ position: 60 }]
+  @UI.identification: [{ position: 40 }]
   _Warehouse.warehouse_name as WarehouseName,
 
   @EndUserText.label: 'City'
   @UI.lineItem: [{ position: 70 }]
+  @UI.identification: [{ position: 50 }]
   _Warehouse.city as WarehouseCity,
 
   @EndUserText.label: 'Address'
@@ -43,7 +72,23 @@ define root view entity ZC_SPACC110_STOCK
 
   @EndUserText.label: 'Stock Amount'
   @UI.lineItem: [{ position: 100 }]
+  @UI.identification: [{ position: 60 }]
   amount,
+
+  @UI.hidden: true
+  LocalCreatedBy,
+
+  @UI.hidden: true
+  LocalCreatedAt,
+
+  @UI.hidden: true
+  LocalLastChangedBy,
+
+  @UI.hidden: true
+  LocalLastChangedAt,
+
+  @UI.hidden: true
+  LastChangedAt,
 
   _Product,
   _Warehouse
