@@ -1,0 +1,4 @@
+@EndUserText.label: 'Warehouse Management Service'
+define service ZSD_SPACC110_WAREHOUSE {
+  expose ZC_SPACC110_WAREHOUSE as Warehouses;
+}

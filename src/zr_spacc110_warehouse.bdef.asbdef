@@ -5,11 +5,11 @@ with draft;
 define behavior for ZR_SPACC110_WAREHOUSE alias Warehouse
 persistent table zspacc110_ware
 draft table zspacc110_ware_d
+late numbering
 lock master
 total etag LastChangedAt
 authorization master ( none )
 etag master LocalLastChangedAt
-early numbering
 {
   create;
   update;
