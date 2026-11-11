@@ -10,7 +10,7 @@ total etag LastChangedAt
 authorization master ( none )
 etag master LocalLastChangedAt
 {
-  create;
+  create (precheck );
   update;
   delete;
 
@@ -30,11 +30,27 @@ etag master LocalLastChangedAt
     LocalLastChangedAt,
     LastChangedAt;
 
+  validation validateUniqueStock on save
+  {
+    create;
+  }
+
+  validation validateStockAmount on save
+  {
+    create;
+    field amount;
+  }
+
   draft action Edit;
   draft action Activate optimized;
   draft action Discard;
   draft action Resume;
-  draft determine action Prepare;
+
+  draft determine action Prepare
+  {
+    validation validateUniqueStock;
+    validation validateStockAmount;
+  }
 
   mapping for zspacc110_stock
   {
