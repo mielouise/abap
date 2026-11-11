@@ -29,14 +29,28 @@ define root view entity ZC_SPACC110_STOCK
     }
   ]
 
-  @EndUserText.label: 'Warehouse ID'
+  @EndUserText.label: 'Warehouse'
   @UI.lineItem: [{ position: 10 }]
   @UI.identification: [{ position: 10 }]
+  @Consumption.valueHelpDefinition: [{
+    entity: {
+      name: 'ZI_SPACC110_WAREHOUSE_VH',
+      element: 'WarehouseId'
+    },
+    useForValidation: true
+  }]
   key warehouse_id,
 
-  @EndUserText.label: 'Product ID'
+  @EndUserText.label: 'Product'
   @UI.lineItem: [{ position: 20 }]
   @UI.identification: [{ position: 20 }]
+  @Consumption.valueHelpDefinition: [{
+    entity: {
+      name: 'ZI_SPACC110_PRODUCT_VH',
+      element: 'ProductId'
+    },
+    useForValidation: true
+  }]
   key product_id,
 
   @EndUserText.label: 'Product Name'

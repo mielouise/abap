@@ -1,4 +1,6 @@
 @EndUserText.label: 'Stock UI Service'
 define service ZUI_SPACC110_STOCK_O4 {
-  expose ZC_SPACC110_STOCK as Stock;
+  expose ZC_SPACC110_STOCK        as Stock;
+  expose ZI_SPACC110_PRODUCT_VH   as ProductValueHelp;
+  expose ZI_SPACC110_WAREHOUSE_VH as WarehouseValueHelp;
 }
