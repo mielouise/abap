@@ -1,0 +1,5 @@
+CLASS zbp_r_spacc110_warehouse DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zr_spacc110_warehouse.
+ENDCLASS.
+
+CLASS zbp_r_spacc110_warehouse IMPLEMENTATION.
+ENDCLASS.

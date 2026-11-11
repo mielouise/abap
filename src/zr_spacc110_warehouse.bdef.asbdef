@@ -1,0 +1,50 @@
+managed implementation in class zbp_r_spacc110_warehouse unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_SPACC110_WAREHOUSE alias Warehouse
+persistent table zspacc110_ware
+draft table zspacc110_ware_d
+lock master
+total etag LastChangedAt
+authorization master ( none )
+etag master LocalLastChangedAt
+early numbering
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly )
+    WarehouseId,
+    LocalCreatedBy,
+    LocalCreatedAt,
+    LocalLastChangedBy,
+    LocalLastChangedAt,
+    LastChangedAt;
+
+  field ( mandatory : create )
+    WarehouseName,
+    City;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  mapping for zspacc110_ware
+  {
+    WarehouseId        = warehouse_id;
+    WarehouseName      = warehouse_name;
+    StreetAddress      = street_address;
+    City               = city;
+    PostalCode         = postal_code;
+
+    LocalCreatedBy     = local_created_by;
+    LocalCreatedAt     = local_created_at;
+    LocalLastChangedBy = local_last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+    LastChangedAt      = last_changed_at;
+  }
+}
