@@ -72,9 +72,11 @@ The repository includes executable ABAP classes for initializing example data. R
 
 ABAP Unit test classes are included for selected functionality. Run them in ADT after importing and activating the project in an SAP system.
 
-## Contributing
+## Author
 
-Contributions and suggestions are welcome. Please open an issue to discuss a proposed change, or submit a pull request with a clear description of the change and any relevant test results.
+This project is developed and maintained by Mie Louise (mielouise).
+
+GitHub: https://github.com/mielouise
 
 ## License
 
