@@ -5,15 +5,21 @@ with draft;
 define behavior for ZR_SPACC110_PRODUCT alias Product
 persistent table zspacc110_produc
 draft table zspacc110_prod_d
+late numbering
 lock master
 total etag LastChangedAt
 authorization master ( none )
 etag master LocalLastChangedAt
-early numbering
 {
   create;
   update;
   delete;
+
+  validation validateProductName on save
+  {
+    create;
+    field ProductName;
+  }
 
   field ( readonly )
     ProductId,
@@ -30,7 +36,11 @@ early numbering
   draft action Activate optimized;
   draft action Discard;
   draft action Resume;
-  draft determine action Prepare;
+
+  draft determine action Prepare
+  {
+    validation validateProductName;
+  }
 
   mapping for zspacc110_produc
   {
@@ -38,7 +48,6 @@ early numbering
     ProductName        = product_name;
     ProductDescription = product_description;
     Category           = category;
-
     LocalCreatedBy     = local_created_by;
     LocalCreatedAt     = local_created_at;
     LocalLastChangedBy = local_last_changed_by;

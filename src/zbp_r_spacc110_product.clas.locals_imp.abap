@@ -1,114 +1,117 @@
-CLASS lhc_product DEFINITION
+CLASS lhc_Product DEFINITION
   INHERITING FROM cl_abap_behavior_handler.
 
   PRIVATE SECTION.
 
-    METHODS earlynumbering_create FOR NUMBERING
-      IMPORTING entities FOR CREATE Product.
+    METHODS validateProductName
+      FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Product~validateProductName.
 
 ENDCLASS.
 
 
-CLASS lhc_product IMPLEMENTATION.
+CLASS lhc_Product IMPLEMENTATION.
 
-  METHOD earlynumbering_create.
+  METHOD validateProductName.
 
-    DATA:
-      entity     TYPE STRUCTURE FOR CREATE ZR_SPACC110_PRODUCT,
-      lv_next_id TYPE i.
+    " Læs produkternes navne
+    READ ENTITIES OF ZR_SPACC110_PRODUCT
+      IN LOCAL MODE
+      ENTITY Product
+      FIELDS ( ProductName )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_products).
 
-    "1. Reuse IDs for existing drafts
-    LOOP AT entities INTO entity
-      WHERE ProductId IS NOT INITIAL.
+    LOOP AT lt_products ASSIGNING FIELD-SYMBOL(<product>).
 
+      " Ryd tidligere fejlmeddelelse
       APPEND VALUE #(
-        %cid      = entity-%cid
-        %key      = entity-%key
-        %is_draft = entity-%is_draft
-      ) TO mapped-product.
+        %tky        = <product>-%tky
+        %state_area = 'VALIDATE_PRODUCT_NAME'
+      ) TO reported-Product.
+
+      " Kontrollér om navnet kun indeholder mellemrum
+      DATA(lv_name) = <product>-ProductName.
+      CONDENSE lv_name NO-GAPS.
+
+      IF lv_name IS INITIAL.
+
+        " Afvis gemning
+        APPEND VALUE #(
+          %tky = <product>-%tky
+        ) TO failed-Product.
+
+        " Vis fejl i Fiori
+        APPEND VALUE #(
+          %tky        = <product>-%tky
+          %state_area = 'VALIDATE_PRODUCT_NAME'
+          %msg = new_message_with_text(
+            severity = if_abap_behv_message=>severity-error
+            text = 'Product name cannot be empty or contain only spaces.'
+          )
+          %element-ProductName = if_abap_behv=>mk-on
+        ) TO reported-Product.
+
+      ENDIF.
 
     ENDLOOP.
 
-    "2. Collect entities needing a new ID
-    DATA(entities_without_id) = entities.
+  ENDMETHOD.
 
-    DELETE entities_without_id
-      WHERE ProductId IS NOT INITIAL.
+ENDCLASS.
 
-    IF entities_without_id IS INITIAL.
-      RETURN.
-    ENDIF.
 
-    "3. Reserve new product IDs
-    TRY.
+CLASS lsc_zr_spacc110_product DEFINITION
+  INHERITING FROM cl_abap_behavior_saver.
 
-        cl_numberrange_runtime=>number_get(
-          EXPORTING
-            nr_range_nr = '01'
-            object      = 'ZSP110PRD'
-            quantity    = CONV #( lines( entities_without_id ) )
-          IMPORTING
-            number            = DATA(lv_number)
-            returncode        = DATA(lv_returncode)
-            returned_quantity = DATA(lv_quantity)
-        ).
+  PROTECTED SECTION.
 
-      CATCH cx_number_ranges INTO DATA(lx_error).
+    METHODS adjust_numbers REDEFINITION.
 
-        LOOP AT entities_without_id INTO entity.
+ENDCLASS.
 
-          APPEND VALUE #(
-            %cid = entity-%cid
-            %key = entity-%key
-          ) TO failed-product.
 
-          APPEND VALUE #(
-            %cid = entity-%cid
-            %key = entity-%key
-            %msg = lx_error
-          ) TO reported-product.
+CLASS lsc_zr_spacc110_product IMPLEMENTATION.
 
-        ENDLOOP.
+  METHOD adjust_numbers.
 
-        RETURN.
+    " Gennemgå nye produkter
+    LOOP AT mapped-Product
+      ASSIGNING FIELD-SYMBOL(<product>).
 
-    ENDTRY.
+      TRY.
 
-    "4. Handle insufficient numbers
-    IF lv_returncode = '2'
-       OR lv_returncode = '3'
-       OR lv_quantity <> lines( entities_without_id ).
+          " Hent næste Product ID
+          cl_numberrange_runtime=>number_get(
+            EXPORTING
+              nr_range_nr = '01'
+              object      = 'ZSP110PRD'
+              quantity    = 1
+            IMPORTING
+              number            = DATA(lv_number)
+              returncode        = DATA(lv_returncode)
+              returned_quantity = DATA(lv_quantity)
+          ).
 
-      LOOP AT entities_without_id INTO entity.
+        CATCH cx_number_ranges INTO DATA(lx_error).
 
-        APPEND VALUE #(
-          %cid        = entity-%cid
-          %key        = entity-%key
-          %fail-cause = if_abap_behv=>cause-conflict
-        ) TO failed-product.
+          " Kritisk fejl under RAP save-sekvensen
+          RAISE SHORTDUMP lx_error.
 
-      ENDLOOP.
+      ENDTRY.
 
-      RETURN.
+      " Kontrollér resultatet
+      ASSERT lv_quantity = 1.
+      ASSERT lv_number IS NOT INITIAL.
 
-    ENDIF.
+      ASSERT lv_returncode <> '2'
+         AND lv_returncode <> '3'.
 
-    "5. Calculate first generated ID
-    lv_next_id = CONV i( lv_number )
-               - CONV i( lv_quantity ).
+      ASSERT CONV decfloat34( lv_number ) > 0.
+      ASSERT CONV decfloat34( lv_number ) <= 2147483647.
 
-    "6. Map each generated ProductId
-    LOOP AT entities_without_id INTO entity.
-
-      lv_next_id += 1.
-
-      entity-ProductId = lv_next_id.
-
-      APPEND VALUE #(
-        %cid      = entity-%cid
-        %key      = entity-%key
-        %is_draft = entity-%is_draft
-      ) TO mapped-product.
+      " Tildel endeligt Product ID
+      <product>-%key-ProductId = CONV i( lv_number ).
 
     ENDLOOP.
 
